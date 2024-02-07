@@ -1,0 +1,13 @@
+version: 1
+project:
+  title: PandaRoot container for WSL
+  description: |
+    These pages describe how to work with PandaRoot on Windows Subsystem for Linux (WSL).
+  github: https://github.com/redeboer/pandaroot-wsl
+  authors:
+    - name: Remco de Boer
+      affiliation: Ruhr University Bochum
+site:
+  template: book-theme
+  options:
+    logo: fig/site-logo.svg
