@@ -1,0 +1,15 @@
+{
+  "recommendations": [
+    "editorconfig.editorconfig",
+    "esbenp.prettier-vscode",
+    "executablebookproject.myst-highlight",
+    "foxundermoon.shell-format",
+    "mrmlnc.vscode-apache",
+    "ms-azuretools.vscode-docker",
+    "ms-python.python",
+    "ms-vscode.live-server",
+    "redhat.vscode-yaml",
+    "streetsidesoftware.code-spell-checker",
+    "yzhang.markdown-all-in-one"
+  ]
+}
