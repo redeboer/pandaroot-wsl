@@ -4,13 +4,13 @@ date: 2024-02-07
 
 # PandaRoot container for WSL
 
-This page describes how to build and and run [PandaRoot](https://git.panda.gsi.de/PandaRootGroup/PandaRoot) inside a Docker container on [Windows Subsystem for Linux](https://learn.microsoft.com/en-us/windows/wsl/about) (WSL).
+This page describes how to build and and run [PandaRoot](https://git.panda.gsi.de/PandaRootGroup/PandaRoot) inside a Docker container on [Windows Subsystem for Linux](https://learn.microsoft.com/en-us/windows/wsl/about) (WSL). Install WSL following [these official instructions](https://learn.microsoft.com/en-us/windows/wsl/install). It's best to stick to the defaults: just chose Ubuntu as Linux distro. If you installed [Visual Studio Code](https://code.visualstudio.com), have a look at [this tutorial](https://code.visualstudio.com/docs/remote/wsl) on WSL and VSCode.
 
-## 1. Windows Subsystem for Linux
+## 1. Docker container
 
-Install WSL following [these official instructions](https://learn.microsoft.com/en-us/windows/wsl/install). It's best to stick to the defaults: just chose Ubuntu as Linux distro. If you installed [Visual Studio Code](https://code.visualstudio.com), have a look at [this tutorial](https://code.visualstudio.com/docs/remote/wsl) on WSL and VSCode.
+The first part of these instructions focus on terminal commands only. The goal is to build the [PandaRoot](https://git.panda.gsi.de/PandaRootGroup/PandaRoot) source code within a Docker container that has [FairROOT](https://fairroot.gsi.de) installed. In [](#2-vscode-dev-container), we automate this process, so that the container launches directly when you start [VSCode](https://code.visualstudio.com).
 
-## 2. Install Docker
+### 1.1. Install Docker
 
 In a terminal in WSL, install [Podman](https://podman.io), which is can be used to run Docker containers without admin (`sudo`) rights.
 
@@ -37,7 +37,7 @@ Images and containers can take up a lot of space, so you want to remove them as 
 :::
 ::::
 
-## 3. FairSoft container with PandaRoot
+### 1.2. FairSoft container with PandaRoot
 
 If you haven't already, clone the [PandaRoot source code](https://git.panda.gsi.de/PandaRootGroup/PandaRoot):
 
@@ -62,7 +62,7 @@ docker run --rm -it \
 
 You now have a terminal before you inside the FairSoft container, with access to the cloned PandaRoot source code.
 
-## 4. Build and test PandaRoot
+### 1.3. Build and test PandaRoot
 
 You are now ready to build PandaRoot using [these (internal) instructions on GitLab](https://git.panda.gsi.de/PandaRootGroup/PandaRoot/-/blob/4b8df57/docs/Installation/Install_Developers.rst) (see "Out-of-build installation" in particular):
 
@@ -108,3 +108,36 @@ double free or corruption (!prev)
 ```
 
 That means you're good to go! 🎉
+
+## 2. VSCode Dev Container
+
+Visual Studio Code can be run inside a Docker container, so that you don't have to run the commands described in [](#1-docker-container). As of writing, the [`.devcontainer.json`](https://git.panda.gsi.de/PandaRootGroup/PandaRoot/-/blob/4b8df57/.devcontainer.json) file in PandaRoot does not work on WSL. To fix this, do the following:
+
+1. Install the VSCode [Dev Containers](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers) extension.
+
+2. Replace the contents of the `.devcontainer.json` file in the PandaRoot repository with the following:
+
+   ```{code} json
+   :filename: .devcontainer.json
+   {
+     "image": "tstockmanns/fairroot_v18_6_fairsoft_apr22_ubuntu_22",
+     "postStartCommand": ". /mnt/work/PandaRoot/install/bin/config.sh",
+     "workspaceFolder": "/mnt/work/PandaRoot",
+     "workspaceMount": "source=${localWorkspaceFolder},target=/mnt/work/PandaRoot,type=bind,consistency=cached"
+   }
+   ```
+
+3. **Bonus**: To avoid always having to run the `config.sh` script when you launch the terminal, set the following in the [settings for your VSCode workspace](https://code.visualstudio.com/docs/getstarted/settings):
+
+   ```{code} json
+   :filename: .vscode/settings.json
+   {
+     "terminal.integrated.defaultProfile.linux": "PandaRoot",
+     "terminal.integrated.profiles.linux": {
+       "PandaRoot": {
+         "args": ["-l", "-c", ". /mnt/work/PandaRoot/install/bin/config.sh; bash"],
+         "path": "/bin/bash"
+       }
+     }
+   }
+   ```
